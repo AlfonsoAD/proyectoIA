@@ -1,0 +1,16 @@
+.main-container {
+  display: flex !important;
+  flex-direction: column !important;
+  place-content: center center !important;
+  align-items: center !important;
+  min-height: 100vh;
+  background-color: white;
+}
+
+.layout-acces-back {
+  background: linear-gradient(
+    135deg,
+    rgb(13, 102, 90) 50%,
+    white 50%
+  ) !important;
+}
