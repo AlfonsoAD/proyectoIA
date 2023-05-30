@@ -1,4 +1,12 @@
-const baseUrl = "https://web-production-b53e.up.railway.app/";
+const baseUrl = "https://j2aligamxapi-production.up.railway.app/";
+
+const options = (data) => {
+  return {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "content-Type": "application/JSON" },
+  };
+};
 
 const postSaveUsers = async (username, email, password) => {
   const data = {
@@ -7,14 +15,10 @@ const postSaveUsers = async (username, email, password) => {
     password: password,
   };
 
-  const response = await fetch(`${baseUrl}users/signup`, {
-    method: "POST",
-    body: JSON.stringify(data),
-    headers: { "content-Type": "application/JSON" },
-  });
+  const response = await fetch(`${baseUrl}users/signup`, options(data));
 
   if (response.status !== 200) {
-    throw new Error(`${response.statusText}--${response.text}`);
+    return { ok: false, results: `${response.statusText} ${response.status}` };
   }
 
   const dataResponse = {
@@ -25,4 +29,29 @@ const postSaveUsers = async (username, email, password) => {
   return dataResponse;
 };
 
-export { postSaveUsers };
+const postLogIn = async (email, password) => {
+  const data = {
+    email: email,
+    password: password,
+  };
+  const response = await fetch(`${baseUrl}users/login`, options(data));
+  if (response.status !== 200) {
+    return { ok: false, results: `${response.statusText} ${response.status}` };
+  }
+  const dataResponse = {
+    ok: true,
+    results: await response.json(),
+  };
+  return dataResponse;
+};
+
+const getForgotPassword = async (email) => {
+  const response = await fetch(`${baseUrl}user/${email}`);
+  if (response.status !== 200) {
+    return { ok: false, results: `${response.statusText} ${response.status}` };
+  }
+
+  const resp = await response.json();
+  return { ok: true, results: resp };
+};
+export { postSaveUsers, postLogIn, getForgotPassword };

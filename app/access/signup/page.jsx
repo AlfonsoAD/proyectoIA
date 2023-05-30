@@ -1,4 +1,3 @@
-"use client";
 import FormSignUp from "@/components/access/form-signup/FormSignUp";
 import LayoutAcces from "@/components/access/LayoutAcces";
 import React from "react";

@@ -1,42 +1,41 @@
 "use client";
 import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { login } from "@/hooks/access/signup";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "@/components/others/loader/Loader";
-import { useRouter } from "next/navigation";
+import msgValidation from "../../../hooks/access/validations/msgValidations";
+import validation from "../../../hooks/access/validations/validations";
+import { recoverPassword } from "@/hooks/access/signup";
+import Link from "next/link";
+import Image from "next/image";
 
-const FormLogin = () => {
-  const router = useRouter();
+const FormForgotPassword = () => {
+  const { vEmail } = msgValidation();
+  const { validationEmail } = validation();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showSpinner, setShowSpinner] = useState(false);
+  const errorEmail = vEmail(validationEmail(email));
 
-  const singIn = async (e) => {
+  const recoverChangePassword = async (e) => {
     e.preventDefault();
     setShowSpinner(true);
-    let response = await login(email, password);
-    if (!response) {
+    const response = await recoverPassword(email);
+    if (!response.ok) {
       setShowSpinner(false);
       Swal.fire({
         title: "Error",
-        text: `${response.results}- verifique sus credenciales`,
+        text: `${response.results}`,
         icon: "error",
       });
       return;
     }
-    if (response) {
-      clearFields();
-      setShowSpinner(false);
-      router.push("/sphere-main");
-    }
-  };
-
-  const clearFields = () => {
+    Swal.fire({
+      title: "Puedes recuperar tu contraseña",
+      text: `Hemos enviado un correo electrónico a tu cuenta de correo proporcionada`,
+      icon: "success",
+    });
+    setShowSpinner(false);
     setEmail("");
-    setPassword("");
   };
 
   return (
@@ -59,7 +58,7 @@ const FormLogin = () => {
           <div className="flex flex-col items-center justify-center">
             <strong>
               {" "}
-              <h1>Iniciar Sesión</h1>{" "}
+              <h1>Recuperar contraseña</h1>{" "}
             </strong>
           </div>
 
@@ -75,28 +74,14 @@ const FormLogin = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
                 />
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="Password"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  onChange={(e) => setPassword(e.target.value)}
-                  value={password}
-                />
-                <Link
-                  href="/access/password"
-                  className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 mt-2"
-                >
-                  Forgot password?
-                </Link>
+                <small className="text-red-600">{errorEmail}</small>
               </div>
             )}
             {showSpinner && (
               <div className="flex flex-col items-center justify-center">
                 <Loader />
                 <p>
-                  <strong>Redirigiendo ... </strong>
+                  <strong>Enviando email ... </strong>
                 </p>
               </div>
             )}
@@ -104,19 +89,17 @@ const FormLogin = () => {
               <button
                 type="button"
                 className="w-60 focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-                onClick={(e) => singIn(e)}
+                onClick={(e) => recoverChangePassword(e)}
               >
                 {" "}
-                Sign in
+                Recuperar contraseña
               </button>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                <Link
-                  href="/access/signup"
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                >
-                  Sign up
-                </Link>
-              </p>
+              <Link
+                href="/access/login"
+                className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 mt-2"
+              >
+                regresar
+              </Link>
             </div>
           </form>
         </div>
@@ -125,4 +108,4 @@ const FormLogin = () => {
   );
 };
 
-export default FormLogin;
+export default FormForgotPassword;
