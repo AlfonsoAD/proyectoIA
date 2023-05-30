@@ -1,4 +1,4 @@
-import LayoutAcces from "@/components/access/layoutAcces";
+import LayoutAcces from "../../../components/access/LayoutAcces";
 import React from "react";
 import "../../globals.css";
 import FormLogin from "@/components/access/form-login/FormLogin";
