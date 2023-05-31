@@ -8,6 +8,13 @@ const options = (data) => {
   };
 };
 
+const optionsnb = () => {
+  return {
+    method: "POST",
+    headers: { "content-Type": "application/JSON" },
+  };
+};
+
 const postSaveUsers = async (username, email, password) => {
   const data = {
     username: username,
@@ -34,9 +41,12 @@ const postLogIn = async (email, password) => {
     email: email,
     password: password,
   };
-  const response = await fetch(`${baseUrl}users/login`, options(data));
+  const response = await fetch(`${baseUrl}users/refresh-login`, options(data));
   if (response.status !== 200) {
-    return { ok: false, results: `${response.statusText} ${response.status}` };
+    return {
+      ok: false,
+      results: `${response.statusCode} ${response.name} ${response.message}`,
+    };
   }
   const dataResponse = {
     ok: true,
@@ -54,4 +64,35 @@ const getForgotPassword = async (email) => {
   const resp = await response.json();
   return { ok: true, results: resp };
 };
-export { postSaveUsers, postLogIn, getForgotPassword };
+
+const postAccountConfirm = async (accessToken) => {
+  const response = await fetch(
+    `${baseUrl}confirmation/${accessToken}`,
+    optionsnb()
+  );
+  if (response.status !== 200) {
+    return { ok: false, results: `${response.statusText} ${response.status}` };
+  }
+
+  const resp = await response.json();
+  return { ok: true, results: resp };
+};
+
+const postChangePassword = async (password, token) => {
+  const data = { password: password };
+  const response = await fetch(`${baseUrl}changePass/${token}`, options(data));
+  console.log(response);
+  if (response.status !== 200) {
+    return { ok: false, results: `${response.statusText} ${response.status}` };
+  }
+  const resp = await response.json();
+  return { ok: true, results: resp };
+};
+
+export {
+  postSaveUsers,
+  postLogIn,
+  getForgotPassword,
+  postAccountConfirm,
+  postChangePassword,
+};
